@@ -1,0 +1,359 @@
+openapi: 3.0.3
+info:
+  title: "Рядом — API психопросвета"
+  version: 1.0.0
+  description: |
+    Публичный API каталога психопросветительных статей MVP.
+    Все endpoint доступны гостю. API возвращает только опубликованные материалы.
+    В MVP публикуются только статьи; аудио и видео добавляются после MVP.
+servers:
+  - url: https://api.example.org
+    description: Production example
+  - url: http://localhost:8080
+    description: Local development
+tags:
+  - name: Psychoeducation
+    description: Публичный каталог психопросветительных материалов
+paths:
+  /api/v1/psychoeducation/materials:
+    get:
+      tags: [Psychoeducation]
+      summary: Получить каталог опубликованных материалов
+      description: |
+        Возвращает опубликованные психопросветительные материалы. В MVP API
+        возвращает только статьи. Неизвестные
+        значения category или tag дают успешный ответ с пустым списком.
+      operationId: listPsychoeducationMaterials
+      security: []
+      parameters:
+        - name: q
+          in: query
+          description: Поисковая строка по заголовку и краткому описанию
+          required: false
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+          example: стресс
+        - name: category
+          in: query
+          description: Slug категории
+          required: false
+          schema:
+            type: string
+            maxLength: 64
+          example: study
+        - name: type
+          in: query
+          description: |
+            Тип материала. В MVP доступен только `article`; `audio` и `video`
+            зарезервированы для последующих релизов.
+          required: false
+          schema:
+            $ref: '#/components/schemas/ContentType'
+          example: article
+        - name: tag
+          in: query
+          description: Slug тега
+          required: false
+          schema:
+            type: string
+            maxLength: 64
+          example: exams
+      responses:
+        '200':
+          description: Список опубликованных статей; список может быть пустым
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialList'
+              examples:
+                result:
+                  summary: Одна статья по фильтрам
+                  value:
+                    items:
+                      - slug: exam-stress
+                        title: Как пережить экзаменационный стресс
+                        summary: Несколько безопасных способов снизить напряжение.
+                        imageUrl: null
+                        category:
+                          slug: study
+                          name: Учёба
+                        tags:
+                          - slug: stress
+                            name: Стресс
+                          - slug: exams
+                            name: Экзамены
+                        type: article
+                        durationMinutes: 5
+                        contentWarning: null
+                    total: 1
+                empty:
+                  summary: Поиск не дал результатов
+                  value:
+                    items: []
+                    total: 0
+        '400':
+          $ref: '#/components/responses/InvalidQuery'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/psychoeducation/materials/{slug}:
+    get:
+      tags: [Psychoeducation]
+      summary: Получить опубликованный материал
+      description: |
+        Возвращает полный опубликованный материал. Черновик и отсутствующий
+        материал одинаково возвращают 404, чтобы не раскрывать существование черновика.
+      operationId: getPsychoeducationMaterial
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Стабильный публичный идентификатор материала
+          schema:
+            type: string
+            pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+          example: exam-stress
+      responses:
+        '200':
+          description: Опубликованный материал
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MaterialDetail'
+              example:
+                slug: exam-stress
+                title: Как пережить экзаменационный стресс
+                summary: Несколько безопасных способов снизить напряжение.
+                imageUrl: null
+                category:
+                  slug: study
+                  name: Учёба
+                tags:
+                  - slug: stress
+                    name: Стресс
+                  - slug: exams
+                    name: Экзамены
+                type: article
+                durationMinutes: 5
+                contentWarning: null
+                body: |
+                  Экзаменационный стресс — распространённая реакция на высокую нагрузку.
+                  Начните с небольшого следующего шага: сделайте короткий перерыв.
+                sources:
+                  - title: Всемирная организация здравоохранения — управление стрессом
+                    url: https://www.who.int/
+                reviewedAt: '2026-10-23T00:00:00Z'
+        '404':
+          $ref: '#/components/responses/MaterialNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/psychoeducation/filters:
+    get:
+      tags: [Psychoeducation]
+      summary: Получить доступные фильтры каталога
+      description: Возвращает типы, категории и теги, доступные в публичном каталоге.
+      operationId: getPsychoeducationFilters
+      security: []
+      responses:
+        '200':
+          description: Набор фильтров каталога
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterOptions'
+              example:
+                types:
+                  - article
+                categories:
+                  - slug: emotional-state
+                    name: Эмоциональное состояние
+                  - slug: study
+                    name: Учёба
+                tags:
+                  - slug: stress
+                    name: Стресс
+                  - slug: sleep
+                    name: Сон
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    MaterialList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialPreview'
+        total:
+          type: integer
+          minimum: 0
+          description: Число результатов с учётом выбранных фильтров
+
+    MaterialPreview:
+      type: object
+      required:
+        - slug
+        - title
+        - summary
+        - category
+        - tags
+        - type
+        - durationMinutes
+      properties:
+        slug:
+          type: string
+          example: exam-stress
+        title:
+          type: string
+          maxLength: 180
+        summary:
+          type: string
+          maxLength: 500
+        imageUrl:
+          type: string
+          format: uri
+          nullable: true
+        type:
+          $ref: '#/components/schemas/ContentType'
+        category:
+          $ref: '#/components/schemas/MaterialCategory'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialTag'
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 120
+          description: |
+            Ожидаемая длительность в минутах. Frontend отображает её как
+            время чтения, прослушивания или просмотра в зависимости от type.
+        contentWarning:
+          type: string
+          maxLength: 500
+          nullable: true
+
+    MaterialDetail:
+      allOf:
+        - $ref: '#/components/schemas/MaterialPreview'
+        - type: object
+          required: [body, sources, reviewedAt]
+          properties:
+            body:
+              type: string
+              description: Полный текст статьи в согласованном безопасном формате разметки
+            sources:
+              type: array
+              items:
+                $ref: '#/components/schemas/Source'
+            reviewedAt:
+              type: string
+              format: date-time
+
+    ContentType:
+      type: string
+      description: |
+        В MVP сервер возвращает только article. Значения audio и video
+        зарезервированы для последующих релизов.
+      enum: [article, audio, video]
+
+    MaterialCategory:
+      type: object
+      required: [slug, name]
+      properties:
+        slug:
+          type: string
+          example: study
+        name:
+          type: string
+          example: Учёба
+
+    MaterialTag:
+      type: object
+      required: [slug, name]
+      description: Тема материала; тег не описывает и не классифицирует пользователя.
+      properties:
+        slug:
+          type: string
+          example: stress
+        name:
+          type: string
+          example: Стресс
+
+    Source:
+      type: object
+      required: [title, url]
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+
+    FilterOptions:
+      type: object
+      required: [types, categories, tags]
+      properties:
+        types:
+          type: array
+          description: Frontend скрывает фильтр по типу, если доступен только один тип.
+          items:
+            $ref: '#/components/schemas/ContentType'
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialCategory'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/MaterialTag'
+
+    ApiError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: invalid_query
+        message:
+          type: string
+          example: Параметр q имеет недопустимое значение
+        requestId:
+          type: string
+          nullable: true
+
+  responses:
+    InvalidQuery:
+      description: Некорректный параметр поиска или фильтра
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: invalid_query
+            message: Параметр q не должен быть длиннее 100 символов
+    MaterialNotFound:
+      description: Статья не существует либо не опубликована
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: material_not_found
+            message: Материал не найден
+    InternalError:
+      description: Внутренняя ошибка сервиса
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: internal_error
+            message: Не удалось обработать запрос. Повторите попытку позже.
