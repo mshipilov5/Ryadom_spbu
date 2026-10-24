@@ -21,18 +21,21 @@ paths:
       summary: Получить каталог опубликованных материалов
       description: |
         Возвращает опубликованные психопросветительные материалы. В MVP API
-        возвращает только статьи. Неизвестные
-        значения category или tag дают успешный ответ с пустым списком.
+        возвращает только статьи. Неизвестные значения category или tags
+        дают успешный ответ с пустым списком.
+        Материалы возвращаются в стабильном порядке публикации: новые сначала.
       operationId: listPsychoeducationMaterials
       security: []
       parameters:
         - name: q
           in: query
-          description: Поисковая строка по заголовку и краткому описанию
+          description: |
+            Поисковая строка по заголовку и краткому описанию.
+            Поиск выполняется без учёта регистра. Пробелы по краям игнорируются.
+            После trim пустая строка эквивалентна отсутствию параметра.
           required: false
           schema:
             type: string
-            minLength: 1
             maxLength: 100
           example: стресс
         - name: category
@@ -40,8 +43,7 @@ paths:
           description: Slug категории
           required: false
           schema:
-            type: string
-            maxLength: 64
+            $ref: '#/components/schemas/Slug'
           example: study
         - name: type
           in: query
@@ -52,14 +54,19 @@ paths:
           schema:
             $ref: '#/components/schemas/ContentType'
           example: article
-        - name: tag
+        - name: tags
           in: query
-          description: Slug тега
+          description: |
+            Slug тегов. При передаче нескольких тегов материал должен
+            содержать все указанные теги.
           required: false
+          style: form
+          explode: true
           schema:
-            type: string
-            maxLength: 64
-          example: exams
+            type: array
+            items:
+              $ref: '#/components/schemas/Slug'
+          example: [stress, exams]
       responses:
         '200':
           description: Список опубликованных статей; список может быть пустым
@@ -113,8 +120,7 @@ paths:
           required: true
           description: Стабильный публичный идентификатор материала
           schema:
-            type: string
-            pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+            $ref: '#/components/schemas/Slug'
           example: exam-stress
       responses:
         '200':
@@ -202,10 +208,12 @@ components:
         - slug
         - title
         - summary
+        - imageUrl
         - category
         - tags
         - type
         - durationMinutes
+        - contentWarning
       properties:
         slug:
           type: string
@@ -248,7 +256,7 @@ components:
           properties:
             body:
               type: string
-              description: Полный текст статьи в согласованном безопасном формате разметки
+              description: Полный текст статьи в Markdown (CommonMark)
             sources:
               type: array
               items:
@@ -259,17 +267,22 @@ components:
 
     ContentType:
       type: string
-      description: |
-        В MVP сервер возвращает только article. Значения audio и video
-        зарезервированы для последующих релизов.
-      enum: [article, audio, video]
+      description: В MVP доступен только тип article.
+      enum: [article]
+
+    Slug:
+      type: string
+      minLength: 1
+      maxLength: 64
+      pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
 
     MaterialCategory:
       type: object
       required: [slug, name]
       properties:
         slug:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/Slug'
           example: study
         name:
           type: string
@@ -281,7 +294,8 @@ components:
       description: Тема материала; тег не описывает и не классифицирует пользователя.
       properties:
         slug:
-          type: string
+          allOf:
+            - $ref: '#/components/schemas/Slug'
           example: stress
         name:
           type: string
