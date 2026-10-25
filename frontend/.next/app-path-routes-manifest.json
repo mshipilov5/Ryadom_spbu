@@ -1,8 +1,0 @@
-{
-  "/(public)/crisis/page": "/crisis",
-  "/(public)/psychoeducation/[slug]/page": "/psychoeducation/[slug]",
-  "/(public)/psychoeducation/page": "/psychoeducation",
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/page": "/"
-}

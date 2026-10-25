@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["file:///Users/danxalu/Ryadom_spbu/frontend/src/app/globals.css"],"sourcesContent":["html,\nbody {\n  margin: 0;\n  min-height: 100%;\n}\n\nbody {\n  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,\n    \"Segoe UI\", sans-serif;\n  -webkit-font-smoothing: antialiased;\n}\n\nbutton,\ninput {\n  font: inherit;\n}\n"],"names":[],"mappings":"AAAA;;;;;AAMA;;;;;AAMA"}}]
-}
