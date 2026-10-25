@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(public)/layout,_N_T_/(public)/psychoeducation/layout,_N_T_/(public)/psychoeducation/page,_N_T_/psychoeducation"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHB1YmxpYyk/psychoeducation/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/b4c26900156014a9e5557985f72dd13303372386adbe7e96458c294fac127b89/$/psychoeducation",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/(public)/psychoeducation/page"
+    },
+    "isFallback": false
+  }
+}
