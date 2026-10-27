@@ -108,6 +108,9 @@ export function PsychoeducationSidebar({ activeHref = '/psychoeducation' }: { ac
           <span className="crisisDot" aria-hidden="true">!</span>
           <span>Нужна срочная помощь</span>
         </Link>
+        <p className="sidebarDisclaimer">
+          Платформа не ставит диагнозы и не заменяет экстренные службы
+        </p>
       </div>
     </aside>
   );
