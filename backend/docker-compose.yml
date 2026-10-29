@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ryadom
+      POSTGRES_USER: ryadom
+      POSTGRES_PASSWORD: ryadom
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ryadom -d ryadom"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      HTTP_ADDR: ":8080"
+      CORS_ALLOWED_ORIGINS: "http://localhost:3000"
+      DATABASE_URL: "postgres://ryadom:ryadom@postgres:5432/ryadom?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
