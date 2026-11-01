@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "Рядом — Психопросвет",
-  description: "Публичный раздел психопросветительных материалов",
+  title: 'Рядом — Срочная помощь',
+  description: 'Кризисный экран платформы Рядом',
 };
 
 export default function RootLayout({
