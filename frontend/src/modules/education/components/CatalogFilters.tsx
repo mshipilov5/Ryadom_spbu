@@ -33,7 +33,7 @@ export function CatalogFilters({
           type="search"
           maxLength={100}
           value={filters.q}
-          placeholder="Поиск по темам, практикам и состояниям"
+          placeholder="Поиск по темам"
           onChange={(event: ChangeEvent<HTMLInputElement>) => onChange({ ...filters, q: event.target.value })}
         />
       </label>

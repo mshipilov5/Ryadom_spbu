@@ -23,7 +23,6 @@ export type MaterialPreview = {
   author: string;
   reviewer: string;
   reviewedAt: string;
-  safeNextStep: string;
 };
 
 export type MaterialDetail = MaterialPreview & {
