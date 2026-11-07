@@ -151,6 +151,8 @@ paths:
                 sources:
                   - title: Всемирная организация здравоохранения — управление стрессом
                     url: https://www.who.int/
+                author: Редакция «Рядом»
+                reviewer: Клинический рецензент СПбГУ
                 reviewedAt: '2026-10-23T00:00:00Z'
         '404':
           $ref: '#/components/responses/MaterialNotFound'
@@ -252,7 +254,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/MaterialPreview'
         - type: object
-          required: [body, sources, reviewedAt]
+          required: [body, sources, author, reviewer, reviewedAt]
           properties:
             body:
               type: string
@@ -261,6 +263,16 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Source'
+            author:
+              type: string
+              maxLength: 180
+              description: Публичное имя автора или редакционное указание материала.
+              example: Редакция «Рядом»
+            reviewer:
+              type: string
+              maxLength: 180
+              description: Публичное указание на клинического рецензента материала.
+              example: Клинический рецензент СПбГУ
             reviewedAt:
               type: string
               format: date-time
