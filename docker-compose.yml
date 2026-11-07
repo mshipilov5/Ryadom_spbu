@@ -37,7 +37,7 @@ services:
     volumes:
       - ./logs/backend:/app/logs
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -45,8 +45,8 @@ services:
 
   # Frontend
   frontend:
-    build: ./frontend
-      context: ./fronted
+    build:
+      context: ./frontend
       dockerfile: Dockerfile
     container_name: spbu-test-frontend
     restart: unless-stopped
