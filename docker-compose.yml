@@ -23,6 +23,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: spbu-test-backend
     restart: unless-stopped
     environment:
@@ -45,6 +46,8 @@ services:
   # Frontend
   frontend:
     build: ./frontend
+      context: ./fronted
+      dockerfile: Dockerfile
     container_name: spbu-test-frontend
     restart: unless-stopped
     environment:
