@@ -28,7 +28,9 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
+html, body { margin: 0; min-height: 100%; width: 100%; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+img, svg { max-width: 100%; }
 body {
   background: var(--ryadom-bg);
   color: var(--ryadom-text);
@@ -38,9 +40,14 @@ body {
 button, input, textarea, select { font: inherit; }
 :focus-visible { outline: 3px solid #bb6b4f; outline-offset: 3px; }
 
+
+/* Shared responsive layout. The outer sidebar fills the page; the inner
+   stack sticks to the viewport. Never hide document-level overflow. */
 .publicShell {
   display: grid;
   grid-template-columns: 244px minmax(0, 1fr);
+  width: 100%;
+  min-width: 0;
   min-height: 100vh;
   background: var(--ryadom-bg);
   color: var(--ryadom-text);
@@ -52,26 +59,30 @@ button, input, textarea, select { font: inherit; }
   min-height: 100vh;
   margin: 0 auto;
   padding: 0 clamp(22px, 3.8vw, 62px) 78px;
+  overflow-wrap: break-word;
 }
-
 .siteHeader {
-  position: sticky;
-  top: 0;
-  align-self: start;
-  height: 100vh;
-  min-height: 580px;
+  min-width: 0;
+  min-height: 100%;
+  align-self: stretch;
+  position: relative;
   background: var(--ryadom-sidebar);
   border-right: 1px solid rgba(255,255,255,.06);
   color: #fff;
   z-index: 40;
 }
 .siteHeaderInner {
-  height: 100%;
+  position: sticky;
+  top: 0;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  gap: 24px;
   padding: 28px 17px 18px;
-  gap: 30px;
 }
+.siteHeaderTop { min-width: 0; }
 .siteBrand {
   display: flex;
   flex-direction: column;
@@ -80,42 +91,34 @@ button, input, textarea, select { font: inherit; }
   padding: 0 10px;
   color: #fff;
   text-decoration: none;
+  min-width: 0;
 }
-/* Логотип без подложки, фильтров и неравномерного растяжения.
-   Для белой версии используется однотонный тёмный фон сайдбара. */
+/* The original white SPbU logo: keep its intrinsic 75:61 ratio and color. */
 .siteBrandLogo {
   display: block;
   flex: 0 0 auto;
   width: 75px;
-  height: 61px;
-  max-width: none;
+  height: auto;
   object-fit: contain;
-  object-position: left center;
 }
-.siteBrandText { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-.siteBrandProduct {
-  color: #ffffff;
-  font-size: 18px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-.siteBrandText small {
-  color: #f2ded8;
-  font-size: 10px;
-  line-height: 1.4;
-}
+.siteBrandText { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.siteBrandProduct { color: #fff; font-size: 18px; line-height: 1.2; font-weight: 700; }
+.siteBrandText small { color: #f2ded8; font-size: 10px; line-height: 1.4; }
+.siteMenuToggle { display: none; }
 .siteNav {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  align-items: stretch;
   gap: 5px;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
 }
 .siteNavLink {
   display: block;
+  flex: 0 0 auto;
+  min-width: 0;
   padding: 11px 14px;
   border-radius: 7px;
   color: #f0e4e0;
@@ -131,36 +134,38 @@ button, input, textarea, select { font: inherit; }
   box-shadow: inset 3px 0 #fff4ee;
   color: #fff;
 }
-.siteNavLink:focus-visible, .siteCrisisLink:focus-visible, .siteLoginLink:focus-visible, .siteBrand:focus-visible {
-  outline-color: #ffffff;
-}
+.siteBrand:focus-visible,
+.siteNavLink:focus-visible,
+.siteMenuToggle:focus-visible,
+.siteCrisisLink:focus-visible,
+.siteLoginLink:focus-visible { outline-color: #fff; }
 .siteHeaderActions {
   flex: 0 0 auto;
   display: grid;
   gap: 9px;
   margin-top: auto;
 }
-.siteCrisisLink, .siteLoginLink {
+.siteCrisisLink,
+.siteLoginLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 0;
   text-align: center;
   padding: 10px;
   border-radius: 7px;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1.35;
   text-decoration: none;
 }
-.siteCrisisLink {
-  color: #6e211a;
-  background: #fff7f5;
-  border: 1px solid #fff1ec;
-}
+.siteCrisisLink { color: #6e211a; background: #fff7f5; border: 1px solid #fff1ec; }
 .siteCrisisLink:hover { background: #ffebe5; }
-.siteLoginLink {
-  color: #ffffff;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.23);
-}
+.siteLoginLink { color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.23); }
 .siteLoginLink:hover { background: rgba(255,255,255,.17); }
 .siteSidebarDisclaimer {
+  flex: 0 0 auto;
   margin: 0 3px;
   max-width: 196px;
   font-size: 9px;
@@ -168,7 +173,9 @@ button, input, textarea, select { font: inherit; }
   font-weight: 400;
   color: #e0d2ce;
   text-align: left;
+  overflow-wrap: break-word;
 }
+
 .publicBreadcrumbs {
   display: flex;
   flex-wrap: wrap;
@@ -181,41 +188,115 @@ button, input, textarea, select { font: inherit; }
 .publicBreadcrumbs a { color: var(--ryadom-accent); text-decoration: none; }
 .publicBreadcrumbs a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
+
+
 @media (max-width: 880px) {
   .publicShell { grid-template-columns: 188px minmax(0, 1fr); }
-  .siteHeaderInner { padding: 22px 11px 16px; gap: 22px; }
+  .siteHeaderInner { padding: 22px 11px 16px; gap: 18px; }
   .siteBrand { padding: 0 8px; }
   .siteNavLink { padding: 10px 11px; font-size: 13px; }
-  .siteSidebarDisclaimer { font-size: 9px; }
   .publicMain { padding-inline: 23px; }
 }
-@media (max-width: 640px) {
+@media (max-width: 700px) {
   .publicShell { display: flex; flex-direction: column; }
-  .siteHeader { height: auto; min-height: 0; width: 100%; position: sticky; top: 0; }
-  .siteHeaderInner { padding: 11px 15px 8px; gap: 9px; }
-  .siteBrand { flex-direction: row; align-items: center; gap: 10px; padding: 0; }
-  .siteBrandLogo { width: 45px; height: auto; }
-  .siteBrandProduct { font-size: 14px; }
-  .siteBrandText small { display: none; }
-  .siteBrandText { gap: 1px; }
-  .siteNav {
-    flex: none;
-    flex-direction: row;
-    white-space: nowrap;
-    overflow: auto hidden;
-    scrollbar-width: none;
-    gap: 4px;
-    padding-bottom: 2px;
+  .siteHeader {
+    position: sticky;
+    top: 0;
+    min-height: 0;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.12);
   }
-  .siteNav::-webkit-scrollbar { display: none; }
-  .siteNavLink { padding: 8px 9px; font-size: 12px; border-radius: 5px; }
-  .siteNavLink.isActive { box-shadow: inset 0 -2px #fff4ee; }
-  .siteHeaderActions { position: absolute; top: 11px; right: 14px; display: flex; gap: 6px; }
-  .siteCrisisLink, .siteLoginLink { padding: 7px; font-size: 10px; }
-  .siteCrisisLink { max-width: 114px; }
-  .siteSidebarDisclaimer { display: block; margin: -1px 0 0; max-width: none; font-size: 8px; line-height: 1.3; }
-  .publicMain { padding: 0 16px 50px; }
+  .siteHeaderInner {
+    position: static;
+    height: auto;
+    min-height: 0;
+    gap: 10px;
+    padding: 10px 16px 9px;
+  }
+  .siteHeaderTop {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+  .siteBrand {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+  }
+  .siteBrandLogo { width: 46px; height: auto; }
+  .siteBrandProduct { font-size: 16px; }
+  .siteBrandText small { font-size: 10px; }
+  .siteMenuToggle {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 44px;
+    padding: 10px 14px;
+    color: #fff;
+    background: rgba(255,255,255,.11);
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .siteMenuToggle:hover { background: rgba(255,255,255,.19); }
+  .siteNav {
+    display: none;
+    flex: none;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 45vh;
+    max-height: 45dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px 0;
+    border-top: 1px solid rgba(255,255,255,.17);
+  }
+  .siteNav.isOpen { display: flex; }
+  .siteNavLink { min-height: 44px; padding: 11px 12px; font-size: 14px; }
+  .siteNavLink.isActive { box-shadow: inset 3px 0 #fff4ee; }
+  .siteHeaderActions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    margin: 0;
+  }
+  .siteCrisisLink,
+  .siteLoginLink { min-height: 44px; font-size: 12px; padding: 9px 12px; }
+  .siteLoginLink { min-width: 72px; }
+  .siteSidebarDisclaimer {
+    display: block;
+    max-width: none;
+    margin: 0;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+  .publicMain { min-height: 0; width: 100%; padding: 0 16px 56px; }
+  /* Safari zooms focused inputs below 16px on iPhone. */
+  .publicShell .publicMain input,
+  .publicShell .publicMain textarea,
+  .publicShell .publicMain select {
+    font-size: max(16px, 1rem);
+  }
+  .publicBreadcrumbs { overflow-wrap: anywhere; }
+}
+@media (max-width: 360px) {
+  .siteBrandText small { display: none; }
+  .siteBrandLogo { width: 42px; }
+  .siteHeaderInner { padding-inline: 12px; }
+  .siteHeaderActions { gap: 6px; }
+  .siteCrisisLink, .siteLoginLink { font-size: 11px; padding: 9px 7px; }
+  .publicMain { padding-inline: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
