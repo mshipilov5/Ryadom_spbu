@@ -1,24 +1,19 @@
 import { Suspense } from 'react';
 import { PracticeCatalogClient } from '@/modules/practices/components/PracticeCatalogClient';
 import { PracticeCatalogLoading } from '@/modules/practices/components/PracticeCatalogStates';
-import { PracticesSidebar } from '@/modules/practices/components/PracticesSidebar';
+import { SiteHeader } from '@/modules/navigation/components/SiteHeader';
 import './practices.css';
 
 export default function PracticesPage() {
   return (
-    <div className="practicesShell">
-      <PracticesSidebar />
-      <main className="practicesMain">
-        <header className="publicTopbar">
-          <div>
-            <span className="topbarSection">Практики</span>
-            <span className="topbarHint">Короткие упражнения и чек-листы</span>
-          </div>
-          <div className="guestBadge" aria-label="Текущий режим: гость">
-            <span className="guestAvatar" aria-hidden="true">Г</span>
-            <span>Гость</span>
-          </div>
-        </header>
+    <div className="publicShell">
+      <SiteHeader activeHref="/practices" />
+      <main className="publicMain">
+        <nav className="publicBreadcrumbs" aria-label="Навигационная цепочка">
+          <a href="/">Главная</a>
+          <span aria-hidden="true">/</span>
+          <span>Практики</span>
+        </nav>
 
         <section className="catalogHero">
           <p className="eyebrow">Практики</p>

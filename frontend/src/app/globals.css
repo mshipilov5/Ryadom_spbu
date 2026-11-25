@@ -1,16 +1,221 @@
-html,
-body {
-  margin: 0;
-  min-height: 100%;
+/* Фирменные ориентиры СПбГУ: https://pr.spbu.ru/design-templates
+   Локальный белый логотип: public/spbu-logo-white.png (предоставлен пользователем).
+   Open Sans — основной шрифт; Segoe UI — запасной, без поставки файлов шрифтов.
+*/
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --ryadom-bg: #f7f8f9;
+  --ryadom-surface: #ffffff;
+  --ryadom-surface-soft: #f3f4f6;
+  --ryadom-sidebar: #70281f;
+  --ryadom-sidebar-hover: #863327;
+  --ryadom-sidebar-active: #9f2d20;
+  --ryadom-accent: #9f2d20;
+  --spbu-terracotta: #9f2d20;
+  --spbu-gray: #a8adb4;
+  --ryadom-accent-dark: #772016;
+  --ryadom-accent-soft: #f8eae7;
+  --ryadom-text: #282b2f;
+  --ryadom-muted: #565e66;
+  --ryadom-border: #d7dbe0;
+  --ryadom-danger: #a71936;
+  --ryadom-danger-soft: #fff0f2;
+  --ryadom-warning: #7e571c;
+  --ryadom-warning-soft: #fcf5e9;
+  --ryadom-shadow: 0 3px 16px rgba(48, 57, 63, .055);
+  --ryadom-font: 'Open Sans', 'Segoe UI', Arial, sans-serif;
 }
 
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
 body {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
+  background: var(--ryadom-bg);
+  color: var(--ryadom-text);
+  font-family: var(--ryadom-font);
   -webkit-font-smoothing: antialiased;
 }
+button, input, textarea, select { font: inherit; }
+:focus-visible { outline: 3px solid #bb6b4f; outline-offset: 3px; }
 
-button,
-input {
-  font: inherit;
+.publicShell {
+  display: grid;
+  grid-template-columns: 244px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--ryadom-bg);
+  color: var(--ryadom-text);
+}
+.publicMain {
+  width: 100%;
+  max-width: 1272px;
+  min-width: 0;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 clamp(22px, 3.8vw, 62px) 78px;
+}
+
+.siteHeader {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  min-height: 580px;
+  background: var(--ryadom-sidebar);
+  border-right: 1px solid rgba(255,255,255,.06);
+  color: #fff;
+  z-index: 40;
+}
+.siteHeaderInner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 17px 18px;
+  gap: 30px;
+}
+.siteBrand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 0 10px;
+  color: #fff;
+  text-decoration: none;
+}
+/* Логотип без подложки, фильтров и неравномерного растяжения.
+   Для белой версии используется однотонный тёмный фон сайдбара. */
+.siteBrandLogo {
+  display: block;
+  flex: 0 0 auto;
+  width: 75px;
+  height: 61px;
+  max-width: none;
+  object-fit: contain;
+  object-position: left center;
+}
+.siteBrandText { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+.siteBrandProduct {
+  color: #ffffff;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.siteBrandText small {
+  color: #f2ded8;
+  font-size: 10px;
+  line-height: 1.4;
+}
+.siteNav {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.siteNavLink {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 7px;
+  color: #f0e4e0;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  transition: background 160ms ease, color 160ms ease;
+}
+.siteNavLink:hover { background: var(--ryadom-sidebar-hover); color: #fff; }
+.siteNavLink.isActive {
+  background: var(--ryadom-sidebar-active);
+  box-shadow: inset 3px 0 #fff4ee;
+  color: #fff;
+}
+.siteNavLink:focus-visible, .siteCrisisLink:focus-visible, .siteLoginLink:focus-visible, .siteBrand:focus-visible {
+  outline-color: #ffffff;
+}
+.siteHeaderActions {
+  flex: 0 0 auto;
+  display: grid;
+  gap: 9px;
+  margin-top: auto;
+}
+.siteCrisisLink, .siteLoginLink {
+  text-align: center;
+  padding: 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.siteCrisisLink {
+  color: #6e211a;
+  background: #fff7f5;
+  border: 1px solid #fff1ec;
+}
+.siteCrisisLink:hover { background: #ffebe5; }
+.siteLoginLink {
+  color: #ffffff;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.23);
+}
+.siteLoginLink:hover { background: rgba(255,255,255,.17); }
+.siteSidebarDisclaimer {
+  margin: 0 3px;
+  max-width: 196px;
+  font-size: 9px;
+  line-height: 1.55;
+  font-weight: 400;
+  color: #e0d2ce;
+  text-align: left;
+}
+.publicBreadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  padding: 18px 0 0;
+  color: var(--ryadom-muted);
+  font-size: 12px;
+}
+.publicBreadcrumbs a { color: var(--ryadom-accent); text-decoration: none; }
+.publicBreadcrumbs a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (max-width: 880px) {
+  .publicShell { grid-template-columns: 188px minmax(0, 1fr); }
+  .siteHeaderInner { padding: 22px 11px 16px; gap: 22px; }
+  .siteBrand { padding: 0 8px; }
+  .siteNavLink { padding: 10px 11px; font-size: 13px; }
+  .siteSidebarDisclaimer { font-size: 9px; }
+  .publicMain { padding-inline: 23px; }
+}
+@media (max-width: 640px) {
+  .publicShell { display: flex; flex-direction: column; }
+  .siteHeader { height: auto; min-height: 0; width: 100%; position: sticky; top: 0; }
+  .siteHeaderInner { padding: 11px 15px 8px; gap: 9px; }
+  .siteBrand { flex-direction: row; align-items: center; gap: 10px; padding: 0; }
+  .siteBrandLogo { width: 45px; height: auto; }
+  .siteBrandProduct { font-size: 14px; }
+  .siteBrandText small { display: none; }
+  .siteBrandText { gap: 1px; }
+  .siteNav {
+    flex: none;
+    flex-direction: row;
+    white-space: nowrap;
+    overflow: auto hidden;
+    scrollbar-width: none;
+    gap: 4px;
+    padding-bottom: 2px;
+  }
+  .siteNav::-webkit-scrollbar { display: none; }
+  .siteNavLink { padding: 8px 9px; font-size: 12px; border-radius: 5px; }
+  .siteNavLink.isActive { box-shadow: inset 0 -2px #fff4ee; }
+  .siteHeaderActions { position: absolute; top: 11px; right: 14px; display: flex; gap: 6px; }
+  .siteCrisisLink, .siteLoginLink { padding: 7px; font-size: 10px; }
+  .siteCrisisLink { max-width: 114px; }
+  .siteSidebarDisclaimer { display: block; margin: -1px 0 0; max-width: none; font-size: 8px; line-height: 1.3; }
+  .publicMain { padding: 0 16px 50px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }

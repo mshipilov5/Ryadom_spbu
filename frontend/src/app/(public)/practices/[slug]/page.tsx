@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { PracticeView } from '@/modules/practices/components/PracticeView';
-import { PracticesSidebar } from '@/modules/practices/components/PracticesSidebar';
+import { SiteHeader } from '@/modules/navigation/components/SiteHeader';
 import { practices } from '@/modules/practices/mock/practices';
 import '../practices.css';
 
@@ -13,19 +13,16 @@ export default async function PracticePage({ params }: { params: Promise<{ slug:
   }
 
   return (
-    <div className="practicesShell">
-      <PracticesSidebar />
-      <main className="practicesMain practiceDetailMain">
-        <header className="publicTopbar">
-          <div>
-            <span className="topbarSection">Практики</span>
-            <span className="topbarHint">Текстовая практика самопомощи</span>
-          </div>
-          <div className="guestBadge" aria-label="Текущий режим: гость">
-            <span className="guestAvatar" aria-hidden="true">Г</span>
-            <span>Гость</span>
-          </div>
-        </header>
+    <div className="publicShell">
+      <SiteHeader activeHref="/practices" />
+      <main className="publicMain practiceDetailMain">
+        <nav className="publicBreadcrumbs" aria-label="Навигационная цепочка">
+          <a href="/">Главная</a>
+          <span aria-hidden="true">/</span>
+          <a href="/practices">Практики</a>
+          <span aria-hidden="true">/</span>
+          <span>{practice.title}</span>
+        </nav>
         <PracticeView practice={practice} />
       </main>
     </div>
