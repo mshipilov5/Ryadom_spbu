@@ -17,6 +17,7 @@ type Router struct {
 	authDB           *sql.DB
 	app              *fiber.App
 	educationService core.EducationService
+	practicesService core.PracticesService
 	log              *slog.Logger
 	corsOrigins      string
 }
@@ -31,6 +32,13 @@ func WithAuth(service *authservice.Service, secureCookie bool, db *sql.DB) Route
 	}
 }
 
+// WithPractices enables the public practices endpoints.
+func WithPractices(service core.PracticesService) RouterOption {
+	return func(r *Router) {
+		r.practicesService = service
+	}
+}
+
 func NewRouter(app *fiber.App, educationService core.EducationService, corsOrigins string, log *slog.Logger, options ...RouterOption) {
 	router := &Router{
 		app:              app,
@@ -38,7 +46,6 @@ func NewRouter(app *fiber.App, educationService core.EducationService, corsOrigi
 		log:              log,
 		corsOrigins:      corsOrigins,
 	}
-
 	for _, option := range options {
 		option(router)
 	}
@@ -66,6 +73,12 @@ func (r *Router) initRoutes() {
 	if r.authDB != nil {
 		r.mountSubmissions(v1, r.authDB)
 		r.mountEvents(v1, r.authDB)
+	}
+
+	// practices (mounted only when WithPractices is provided)
+	if r.practicesService != nil {
+		v1.Get("/practices", r.getPractices)
+		v1.Get("/practices/:slug", r.getPracticeBySlug)
 	}
 }
 
