@@ -9,10 +9,7 @@ import (
 	"github.com/mshipilov5/Ryadom_spbu/backend/config"
 	httpcontroller "github.com/mshipilov5/Ryadom_spbu/backend/internal/controller/http"
 	"github.com/mshipilov5/Ryadom_spbu/backend/internal/migrate"
-<<<<<<< HEAD
 	authservice "github.com/mshipilov5/Ryadom_spbu/backend/internal/service/auth"
-=======
->>>>>>> 85fb3de (fix(practices): wire practices service into app)
 	educationservice "github.com/mshipilov5/Ryadom_spbu/backend/internal/service/education"
 	practicesservice "github.com/mshipilov5/Ryadom_spbu/backend/internal/service/practices"
 	authstore "github.com/mshipilov5/Ryadom_spbu/backend/internal/store/auth"
