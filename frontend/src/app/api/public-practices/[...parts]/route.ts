@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getDemoPractice, getDemoPracticeList, isPracticesDemoEnabled } from '@/modules/practices/mock/demo';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,6 +38,21 @@ function toPractice(p: ApiPractice) {
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ parts: string[] }> }) {
   const { parts } = await params;
+
+  // Явный локальный demo — в production ветка никогда не активируется.
+  if (isPracticesDemoEnabled()) {
+    if (parts.length === 1 && parts[0] === 'practices') {
+      return NextResponse.json(getDemoPracticeList(req.nextUrl.searchParams), { headers });
+    }
+    if (parts.length === 2 && parts[0] === 'practices') {
+      const practice = getDemoPractice(parts[1]);
+      return practice
+        ? NextResponse.json(practice, { headers })
+        : NextResponse.json({ message: 'Не найдено' }, { status: 404, headers });
+    }
+    return NextResponse.json({ message: 'Не найдено' }, { status: 404, headers });
+  }
+
   const base = upstreamBase();
   if (!base) {
     return NextResponse.json({ message: 'Сервис практик не настроен' }, { status: 503, headers });
