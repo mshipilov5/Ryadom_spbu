@@ -56,6 +56,9 @@ func (r *Router) writeServiceError(ctx *fiber.Ctx, err error) error {
 	if errors.Is(err, core.ErrArticleNotFound) {
 		return writeError(ctx, fiber.StatusNotFound, "material_not_found", "Материал не найден")
 	}
+	if errors.Is(err, core.ErrPracticeNotFound) {
+		return writeError(ctx, fiber.StatusNotFound, "practice_not_found", "Практика не найдена")
+	}
 
 	r.log.Error("request failed", slog.String("path", ctx.Path()), slog.Any("error", err))
 	return writeError(ctx, fiber.StatusInternalServerError, "internal_error", "Не удалось обработать запрос. Повторите попытку позже.")

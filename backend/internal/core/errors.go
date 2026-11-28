@@ -4,6 +4,8 @@ import "errors"
 
 var ErrArticleNotFound = errors.New("published article not found")
 
+var ErrPracticeNotFound = errors.New("published practice not found")
+
 type ValidationError struct {
 	Message string
 }

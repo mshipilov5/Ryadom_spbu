@@ -7,6 +7,11 @@ import _ "embed"
 //go:embed 000001_initial.up.sql
 var InitialUp string
 
+// PracticesUp contains practices schema and seed data.
+//
+//go:embed 000002_practices.up.sql
+var PracticesUp string
+
 //go:embed 000003_auth.up.sql
 var AuthUp string
 

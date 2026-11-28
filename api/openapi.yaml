@@ -21,6 +21,8 @@ tags:
     description: Анонимные записи стены и их модерация
   - name: Events
     description: Назначенные встречи и управление участием
+  - name: Practices
+    description: Публичный каталог практик самопомощи
 paths:
   /api/v1/home:
     get:
@@ -783,6 +785,104 @@ paths:
                 $ref: '#/components/schemas/EventError'
         '503':
           $ref: '#/components/responses/EventStorageUnavailable'
+  /api/v1/practices:
+    get:
+      tags: [Practices]
+      summary: Получить каталог практик
+      description: |
+        Возвращает опубликованные практики. Поиск (q) выполняется без учёта
+        регистра по заголовку, краткому описанию и тегам. Пробелы по краям
+        игнорируются; после trim пустая строка эквивалентна отсутствию параметра.
+        Практики возвращаются в стабильном порядке.
+      operationId: listPractices
+      security: []
+      parameters:
+        - name: q
+          in: query
+          description: Поисковая строка по заголовку, краткому описанию и тегам.
+          required: false
+          schema:
+            type: string
+            maxLength: 100
+          example: дыхание
+        - name: kind
+          in: query
+          description: |
+            Тип практики. Значение должно входить в enum PracticeKind;
+            иначе возвращается 400 invalid_query.
+          required: false
+          schema:
+            $ref: '#/components/schemas/PracticeKind'
+          example: breathing
+      responses:
+        '200':
+          description: Список практик; список может быть пустым
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeList'
+              examples:
+                result:
+                  summary: Одна практика по фильтрам
+                  value:
+                    items:
+                      - slug: long-exhale
+                        kind: breathing
+                        title: Спокойный длинный выдох
+                        summary: Короткая дыхательная практика без задержки дыхания.
+                        durationMinutes: 3
+                        tags: [напряжение, пауза, дыхание]
+                    total: 1
+                empty:
+                  summary: Поиск не дал результатов
+                  value:
+                    items: []
+                    total: 0
+        '400':
+          $ref: '#/components/responses/InvalidQuery'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/v1/practices/{slug}:
+    get:
+      tags: [Practices]
+      summary: Получить практику по slug
+      description: Возвращает полную практику. Если практики нет — возвращается 404.
+      operationId: getPractice
+      security: []
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: Стабильный публичный идентификатор практики
+          schema:
+            $ref: '#/components/schemas/Slug'
+          example: long-exhale
+      responses:
+        '200':
+          description: Практика
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PracticeDetail'
+              example:
+                slug: long-exhale
+                kind: breathing
+                title: Спокойный длинный выдох
+                summary: Короткая дыхательная практика без задержки дыхания.
+                durationMinutes: 3
+                tags: [напряжение, пауза, дыхание]
+                steps:
+                  - Сядьте или встаньте так, чтобы положение было устойчивым.
+                  - Сделайте обычный спокойный вдох без попытки набрать как можно больше воздуха.
+                  - Мягко выдохните немного дольше, чем длился вдох.
+                boundaries:
+                  - Не задерживайте дыхание и не старайтесь дышать глубже, чем комфортно.
+                  - Если появляется головокружение или становится неприятно — остановитесь.
+        '404':
+          $ref: '#/components/responses/PracticeNotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
 
 components:
   parameters:
@@ -1228,6 +1328,70 @@ components:
           items:
             $ref: '#/components/schemas/MaterialTag'
 
+    PracticeKind:
+      type: string
+      description: |
+        Тип практики. Frontend группирует и подписывает практики по этому значению.
+      enum: [breathing, grounding, stress, mindfulness, checklist]
+
+    PracticeList:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PracticePreview'
+        total:
+          type: integer
+          minimum: 0
+          description: Число результатов с учётом выбранных фильтров
+
+    PracticePreview:
+      type: object
+      required: [slug, kind, title, summary, durationMinutes, tags]
+      properties:
+        slug:
+          allOf:
+            - $ref: '#/components/schemas/Slug'
+          example: long-exhale
+        kind:
+          $ref: '#/components/schemas/PracticeKind'
+        title:
+          type: string
+          maxLength: 180
+        summary:
+          type: string
+          maxLength: 500
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 120
+          description: Ожидаемая длительность практики в минутах.
+        tags:
+          type: array
+          description: Темы практики в виде простых подписей (не slug).
+          items:
+            type: string
+            example: дыхание
+
+    PracticeDetail:
+      allOf:
+        - $ref: '#/components/schemas/PracticePreview'
+        - type: object
+          required: [steps, boundaries]
+          properties:
+            steps:
+              type: array
+              description: Шаги выполнения практики по порядку.
+              items:
+                type: string
+            boundaries:
+              type: array
+              description: Ограничения и предупреждения, которые стоит показать перед началом.
+              items:
+                type: string
+
     ApiError:
       type: object
       required: [code, message]
@@ -1318,6 +1482,15 @@ components:
           example:
             code: invalid_query
             message: Параметр q не должен быть длиннее 100 символов
+    PracticeNotFound:
+      description: Практика не существует либо не опубликована
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+          example:
+            code: practice_not_found
+            message: Практика не найдена
     MaterialNotFound:
       description: Статья не существует либо не опубликована
       content:
