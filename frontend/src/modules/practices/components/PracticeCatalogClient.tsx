@@ -27,7 +27,7 @@ export function PracticeCatalogClient() {
     setLoading(true);
     const timer = window.setTimeout(async () => {
       try {
-        const response = await fetch('/api/demo-practices', { cache: 'no-store', signal: controller.signal });
+        const response = await fetch('/api/public-practices/practices', { cache: 'no-store', signal: controller.signal });
         if (response.ok) {
           const result: { items?: Practice[] } = await response.json();
           if (!controller.signal.aborted && Array.isArray(result.items)) setPublished(result.items);
@@ -38,7 +38,8 @@ export function PracticeCatalogClient() {
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [forcedState, retry]);
 
-  const all = useMemo(() => [...builtInPractices, ...published], [published]);
+  // Данные из API заменяют встроенный мок; при недоступности API остаётся мок (фолбэк для демо).
+  const all = useMemo(() => (published.length ? published : builtInPractices), [published]);
   const tags = useMemo(() => Array.from(new Set(all.flatMap(p => p.tags))).sort((a, b) => a.localeCompare(b, 'ru')), [all]);
   const filtered = useMemo(() => filterPractices(all, query, selectedKind, selectedTags), [all, query, selectedKind, selectedTags]);
   const visible = useMemo(() => {

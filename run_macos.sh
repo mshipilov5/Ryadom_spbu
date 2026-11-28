@@ -11,7 +11,7 @@ if (( NODE_MAJOR < 22 )); then
   echo "Рекомендуется Node.js 22+, найден $(node -v)" >&2
 fi
 if [[ ! -e .env.local ]]; then
-  printf 'HOME_API_MODE=demo\nPSYCHO_API_MODE=demo\nPSYCHO_API_BASE_URL=http://localhost:8080\n' > .env.local
+  printf 'HOME_API_MODE=demo\nPSYCHO_API_MODE=demo\nPSYCHO_API_BASE_URL=http://localhost:8080\nPRACTICES_API_BASE_URL=http://localhost:8080\n' > .env.local
 fi
 if [[ ! -d node_modules/next || ! -d node_modules/react ]]; then
   echo 'Устанавливаю зависимости frontend...'
